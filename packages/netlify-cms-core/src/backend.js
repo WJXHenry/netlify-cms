@@ -2,6 +2,7 @@ import { attempt, flatten, isError, trimStart, trimEnd, flow, partialRight, uniq
 import { Map } from 'immutable';
 import { stripIndent } from 'common-tags';
 import fuzzy from 'fuzzy';
+import Fuse from 'fuse.js';
 import { resolveFormat } from 'Formats/formats';
 import { selectIntegration } from 'Reducers/integrations';
 import {
@@ -130,8 +131,21 @@ const commitMessageFormatter = (type, config, { slug, path, collection }) => {
 
 const extractSearchFields = searchFields => entry =>
   searchFields.reduce((acc, field) => {
-    const f = entry.data[field];
-    return f ? `${acc} ${f}` : acc;
+    console.log(field);
+    let splitFields = field.split('.')
+    if (splitFields.length > 1) {
+      let get = entry.data;
+      console.log(get);
+      splitFields.forEach( field => {
+        get = get[field]
+
+      });
+      console.log(get)
+      return get ? `${acc} ${get}` : acc;
+    } else {
+      const f = entry.data[field];
+      return f ? `${acc} ${f}` : acc;
+    }
   }, '');
 
 const sortByScore = (a, b) => {
@@ -409,6 +423,33 @@ class Backend {
       .filter(searchTerm, entries, { extract: extractSearchFields(searchFields) })
       .sort(sortByScore)
       .map(f => f.original);
+    const results = fuzzy.filter(searchTerm, entries, { extract: extractSearchFields(searchFields) })
+    console.log(results)
+    // let test = [
+    //   {
+    //     field1: "Hello",
+    //     field2: {
+    //       subfield1: "1",
+    //       subfield2: "2"
+    //     }
+    //   },
+    //   {
+    //     field1: "Hello 2",
+    //     field2: {
+    //       subfield1: "hi there",
+    //       subfield2: "231"
+    //   }
+    // }];
+    // const testOptions = {
+    //   keys: ["field2.subfield1"]
+    // }
+    // let testFuse = new Fuse(test, testOptions);
+    // let testHits = testFuse.search(searchTerm);
+    // const options = {
+    //   keys: [searchFields]
+    // };
+    // let fuse = new Fuse(entries, options);
+    // const hits = fuse.search(searchTerm)
     return { query: searchTerm, hits };
   }
 

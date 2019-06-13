@@ -229,3 +229,35 @@ collections: # A list of collections the CMS should be able to edit
               - { label: 'Date', name: 'date', widget: 'date' }
               - { label: 'Image', name: 'image', widget: 'image' }
               - { label: 'File', name: 'file', widget: 'file' }
+  - name: "Testing"
+    label: "Test"
+    folder: "_test"
+    extension: "yml"
+    identifier_field: "test1"
+    create: true
+    fields:
+      - name: "test1"
+        label: "Test 1"
+        widget: "string"
+      - name: "test2"
+        label: "Test 2"
+        widget: "string"
+      - name: "object-test"
+        label: "Object Test"
+        widget: "object"
+        fields:
+          - name: "field1"
+            label: "Field 1"
+            widget: "string"
+          - name: "field2"
+            label: "Field 2"
+            widget: "string"
+      - name: "relation_test"
+        label: "Relation Widget Test"
+        widget: "relation"
+        collection: "Testing"
+        searchFields: ["object-test.field1"]
+        valueField: "test1"
+        required: false
+
+

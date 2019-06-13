@@ -139,6 +139,10 @@ export default class RelationControl extends React.Component {
     const searchFieldsArray = List.isList(searchFields) ? searchFields.toJS() : [searchFields];
 
     query(forID, collection, searchFieldsArray, term).then(({ payload }) => {
+
+      console.log(payload.response)
+      console.log("Hi")
+
       let options = this.parseHitOptions(payload.response.hits);
 
       if (!this.allOptions && !term) {
